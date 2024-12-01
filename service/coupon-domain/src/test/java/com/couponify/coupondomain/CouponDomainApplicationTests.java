@@ -1,13 +1,13 @@
-package com.couponify.coupon;
+package com.couponify.coupondomain;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CouponApplicationTests {
+class CouponDomainApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+  @Test
+  void contextLoads() {
+  }
 
 }
