@@ -1,1 +1,3 @@
 rootProject.name = 'coupon'
+include(':service:coupon-api')
+include(':service:coupon-domain')
