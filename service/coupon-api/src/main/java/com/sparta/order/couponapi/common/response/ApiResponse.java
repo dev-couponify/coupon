@@ -8,14 +8,12 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor
 public class ApiResponse<T> {
 
-  private String statusName;
-  private int code;
+  private HttpStatus status;
   private String message;
   private T data;
 
   private ApiResponse(HttpStatus status, String message, T data) {
-    this.statusName = status.name();
-    this.code = status.value();
+    this.status = status;
     this.message = message;
     this.data = data;
   }
