@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum CouponErrorCode {
-  TEST_EXCEPTION(HttpStatus.NOT_FOUND, "테스트입니다");
+  TEST_ERROR(HttpStatus.NOT_FOUND, "테스트");
 
   private final HttpStatus status;
   private final String message;

@@ -1,8 +1,9 @@
 package com.sparta.order.couponapi.common.exception;
 
-import com.sparta.order.couponapi.common.response.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -10,16 +11,34 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class BusinessExceptionHandler {
 
-  @ExceptionHandler(BusinessException.class)
-  public ApiResponse<Void> handleBusinessException(BusinessException ex) {
-    log.error(ex.getStatus().name(), ex.getMessage());
-    return ApiResponse.error(ex.getStatus(), ex.getMessage());
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorResponse> unexpectedException(
+      Exception exception,
+      HttpServletRequest request
+  ) {
+    if (exception instanceof BusinessException) {
+      throw (BusinessException) exception;
+    }
+
+    ErrorResponse errorResponse = ErrorResponse.fromGeneralException(request, exception);
+
+    log.error("Exception occurred: ", exception);
+
+    return ResponseEntity.status(HttpStatus.valueOf(errorResponse.statusCode()))
+        .body(errorResponse);
   }
 
-  @ExceptionHandler({Exception.class, RuntimeException.class})
-  public ApiResponse<Void> handleAllExceptions(Exception ex) {
-    ex.printStackTrace();
-    return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+  @ExceptionHandler(BusinessException.class)
+  public ResponseEntity<ErrorResponse> businessException(
+      BusinessException exception,
+      HttpServletRequest request
+  ) {
+    ErrorResponse errorResponse = ErrorResponse.fromBusinessException(request, exception);
+
+    log.error(errorResponse.toString());
+
+    return ResponseEntity.status(exception.getStatus())
+        .body(errorResponse);
   }
 
 }
