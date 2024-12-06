@@ -1,12 +1,7 @@
 package com.couponify.coupondomain.infrastructure.jpa;
 
-import com.couponify.coupondomain.domain.CouponStatus;
-import com.couponify.coupondomain.domain.Quantity;
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,12 +23,16 @@ public class CouponEntity {
   @Column(length = 100, nullable = false)
   private String name;
 
-  @Enumerated(value = EnumType.STRING)
   @Column(length = 10, nullable = false)
-  private CouponStatus status;
+  private String status;
 
-  @Embedded
   @Column(nullable = false)
-  private Quantity quantity;
+  private Integer quantity;
+
+  public CouponEntity(String name, String status, Integer quantity) {
+    this.name = name;
+    this.status = status;
+    this.quantity = quantity;
+  }
 
 }
