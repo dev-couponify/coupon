@@ -1,0 +1,9 @@
+### 쿠폰 생성
+POST http://localhost:8080/coupon
+Content-Type: application/json
+
+{
+  "name": "여름 할인 쿠폰",
+  "status": "AVAILABLE",
+  "quantity": 100
+}
