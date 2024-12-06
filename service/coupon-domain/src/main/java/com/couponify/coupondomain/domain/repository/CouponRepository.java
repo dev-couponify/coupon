@@ -1,9 +1,7 @@
-package com.couponify.coupondomain.infrastructure;
+package com.couponify.coupondomain.domain.repository;
 
 import com.couponify.coupondomain.infrastructure.jpa.CouponEntity;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface CouponRepository {
 
   public CouponEntity save(CouponEntity coupon);
