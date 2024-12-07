@@ -29,10 +29,14 @@ public class CouponEntity {
   @Column(nullable = false)
   private Integer quantity;
 
-  public CouponEntity(String name, String status, Integer quantity) {
+  private CouponEntity(String name, String status, Integer quantity) {
     this.name = name;
     this.status = status;
     this.quantity = quantity;
+  }
+
+  public static CouponEntity create(String name, String status, Integer quantity) {
+    return new CouponEntity(name, status, quantity);
   }
 
 }

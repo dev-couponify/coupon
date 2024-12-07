@@ -1,9 +1,9 @@
 package com.couponify.coupondomain.domain.repository;
 
-import com.couponify.coupondomain.infrastructure.jpa.CouponEntity;
+import com.couponify.coupondomain.domain.Coupon;
 
 public interface CouponRepository {
 
-  public CouponEntity save(CouponEntity coupon);
+  public Coupon save(Coupon coupon);
 
 }
