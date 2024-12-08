@@ -1,9 +1,9 @@
 package com.couponify.coupondomain.util.mapper;
 
-import com.couponify.coupondomain.domain.Coupon;
-import com.couponify.coupondomain.domain.CouponStatus;
-import com.couponify.coupondomain.domain.Quantity;
-import com.couponify.coupondomain.infrastructure.jpa.CouponEntity;
+import com.couponify.coupondomain.domain.coupon.Coupon;
+import com.couponify.coupondomain.domain.coupon.CouponStatus;
+import com.couponify.coupondomain.domain.coupon.Quantity;
+import com.couponify.coupondomain.infrastructure.jpa.coupon.CouponEntity;
 
 public class CouponDomainMapper {
 

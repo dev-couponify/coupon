@@ -1,4 +1,4 @@
-package com.couponify.coupondomain.domain;
+package com.couponify.coupondomain.domain.coupon;
 
 import lombok.Getter;
 

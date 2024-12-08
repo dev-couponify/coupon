@@ -1,4 +1,4 @@
-package com.couponify.coupondomain.domain;
+package com.couponify.coupondomain.domain.coupon;
 
 import lombok.Getter;
 
@@ -10,7 +10,7 @@ public class Coupon {
   private CouponStatus status;
   private Quantity quantity;
 
-  public Coupon() {
+  private Coupon() {
   }
 
   private Coupon(String name, CouponStatus status, Quantity quantity) {
@@ -28,6 +28,13 @@ public class Coupon {
 
   public static Coupon create(String name, CouponStatus status, int quantity) {
     return new Coupon(name, status, new Quantity(quantity));
+  }
+
+  public Coupon(Long id, String name, CouponStatus status, int quantity) {
+    this.id = id;
+    this.name = name;
+    this.status = status;
+    this.quantity = new Quantity(quantity);
   }
 
 }

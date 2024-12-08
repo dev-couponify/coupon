@@ -1,6 +1,6 @@
 package com.couponify.couponapi.application.dto;
 
-import com.couponify.coupondomain.domain.CouponStatus;
+import com.couponify.coupondomain.domain.coupon.CouponStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

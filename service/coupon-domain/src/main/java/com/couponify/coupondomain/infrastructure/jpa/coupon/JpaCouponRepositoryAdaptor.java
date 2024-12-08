@@ -1,7 +1,7 @@
-package com.couponify.coupondomain.infrastructure.jpa;
+package com.couponify.coupondomain.infrastructure.jpa.coupon;
 
-import com.couponify.coupondomain.domain.Coupon;
-import com.couponify.coupondomain.domain.repository.CouponRepository;
+import com.couponify.coupondomain.domain.coupon.Coupon;
+import com.couponify.coupondomain.domain.coupon.repository.CouponRepository;
 import com.couponify.coupondomain.util.mapper.CouponDomainMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

@@ -1,8 +1,8 @@
 package com.couponify.couponapi.application;
 
 import com.couponify.couponapi.application.dto.CouponCreateDto;
-import com.couponify.coupondomain.domain.Coupon;
-import com.couponify.coupondomain.domain.repository.CouponRepository;
+import com.couponify.coupondomain.domain.coupon.Coupon;
+import com.couponify.coupondomain.domain.coupon.repository.CouponRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
