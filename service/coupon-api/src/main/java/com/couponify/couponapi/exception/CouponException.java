@@ -1,4 +1,4 @@
-package com.sparta.order.couponapi.common.exception;
+package com.couponify.couponapi.exception;
 
 import lombok.Getter;
 

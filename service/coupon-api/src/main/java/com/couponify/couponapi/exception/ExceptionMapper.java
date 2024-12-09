@@ -1,4 +1,4 @@
-package com.sparta.order.couponapi.common.exception;
+package com.couponify.couponapi.exception;
 
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
