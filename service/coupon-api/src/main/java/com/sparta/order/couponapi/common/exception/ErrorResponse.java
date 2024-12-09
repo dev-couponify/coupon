@@ -2,6 +2,7 @@ package com.sparta.order.couponapi.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import org.springframework.http.HttpStatus;
 
 public record ErrorResponse(
     String method,
@@ -11,7 +12,7 @@ public record ErrorResponse(
     LocalDateTime timestamp
 ) {
 
-  public static ErrorResponse fromGeneralException(
+  public static ErrorResponse fromBadRequestException(
       HttpServletRequest request,
       Exception exception
   ) {
@@ -19,6 +20,19 @@ public record ErrorResponse(
         request.getMethod(),
         request.getRequestURI(),
         ExceptionMapper.toHttpStatus(exception).name(),
+        exception.getMessage(),
+        LocalDateTime.now()
+    );
+  }
+
+  public static ErrorResponse fromInternalServerErrorException(
+      HttpServletRequest request,
+      Exception exception
+  ) {
+    return new ErrorResponse(
+        request.getMethod(),
+        request.getRequestURI(),
+        HttpStatus.INTERNAL_SERVER_ERROR.name(),
         exception.getMessage(),
         LocalDateTime.now()
     );

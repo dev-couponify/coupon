@@ -14,6 +14,7 @@ import org.springframework.web.context.request.async.AsyncRequestTimeoutExceptio
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+// TODO enum으로 변경
 public class ExceptionMapper {
 
   public static HttpStatus toHttpStatus(Exception exception) {
@@ -24,7 +25,7 @@ public class ExceptionMapper {
     } else if (exception instanceof HttpMediaTypeNotAcceptableException) {
       return HttpStatus.NOT_ACCEPTABLE;
     } else if (exception instanceof MissingPathVariableException) {
-      return HttpStatus.INTERNAL_SERVER_ERROR;
+      return HttpStatus.BAD_REQUEST;
     } else if (exception instanceof MissingServletRequestParameterException) {
       return HttpStatus.BAD_REQUEST;
     } else if (exception instanceof MissingServletRequestPartException) {
