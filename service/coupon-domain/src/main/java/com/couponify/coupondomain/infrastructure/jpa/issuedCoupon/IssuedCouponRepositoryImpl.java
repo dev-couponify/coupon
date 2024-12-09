@@ -2,14 +2,13 @@ package com.couponify.coupondomain.infrastructure.jpa.issuedCoupon;
 
 import com.couponify.coupondomain.domain.issuedCoupon.IssuedCoupon;
 import com.couponify.coupondomain.domain.issuedCoupon.repository.IssuedCouponRepository;
-import com.couponify.coupondomain.util.mapper.CouponDomainMapper;
-import com.couponify.coupondomain.util.mapper.IssuedCouponDomainMapper;
+import com.couponify.coupondomain.infrastructure.jpa.coupon.CouponEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class JpaIssuedCouponRepositoryAdaptor implements IssuedCouponRepository {
+public class IssuedCouponRepositoryImpl implements IssuedCouponRepository {
 
   private final JpaIssuedCouponRepository jpaIssuedCouponRepository;
 
@@ -17,11 +16,11 @@ public class JpaIssuedCouponRepositoryAdaptor implements IssuedCouponRepository 
   public IssuedCoupon save(IssuedCoupon issuedCoupon) {
     IssuedCouponEntity issuedCouponEntity = IssuedCouponEntity.create(
         issuedCoupon.getUserId(),
-        CouponDomainMapper.toEntity(issuedCoupon.getCoupon()),
+        CouponEntity.fromDomain(issuedCoupon.getCoupon()),
         issuedCoupon.isUsed()
     );
     IssuedCouponEntity savedIssuedCouponEntity = jpaIssuedCouponRepository.save(issuedCouponEntity);
-    return IssuedCouponDomainMapper.toDomain(savedIssuedCouponEntity);
+    return IssuedCoupon.formEntity(savedIssuedCouponEntity);
   }
 
 }

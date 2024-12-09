@@ -37,7 +37,7 @@ public class CouponEntity {
     this.quantity = quantity;
   }
 
-  public CouponEntity(Long id, String name, String status, Integer quantity) {
+  private CouponEntity(Long id, String name, String status, Integer quantity) {
     this.id = id;
     this.name = name;
     this.status = status;
@@ -48,7 +48,7 @@ public class CouponEntity {
     return new CouponEntity(name, status, quantity);
   }
 
-  public static CouponEntity from(Coupon coupon) {
+  public static CouponEntity fromDomain(Coupon coupon) {
     return new CouponEntity(
         coupon.getId(),
         coupon.getName(),

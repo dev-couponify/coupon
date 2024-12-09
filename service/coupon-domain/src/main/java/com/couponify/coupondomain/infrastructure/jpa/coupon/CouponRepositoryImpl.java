@@ -2,14 +2,13 @@ package com.couponify.coupondomain.infrastructure.jpa.coupon;
 
 import com.couponify.coupondomain.domain.coupon.Coupon;
 import com.couponify.coupondomain.domain.coupon.repository.CouponRepository;
-import com.couponify.coupondomain.util.mapper.CouponDomainMapper;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class JpaCouponRepositoryAdaptor implements CouponRepository {
+public class CouponRepositoryImpl implements CouponRepository {
 
   private final JpaCouponRepository jpaCouponRepository;
 
@@ -22,13 +21,13 @@ public class JpaCouponRepositoryAdaptor implements CouponRepository {
       couponEntity = updateCouponEntity(coupon);
     }
     CouponEntity savedCouponEntity = jpaCouponRepository.save(couponEntity);
-    return CouponDomainMapper.toDomain(savedCouponEntity);
+    return Coupon.fromEntity(savedCouponEntity);
   }
 
   @Override
   public Optional<Coupon> findById(Long couponId) {
     return jpaCouponRepository.findById(couponId)
-        .map(CouponDomainMapper::toDomain);
+        .map(Coupon::fromEntity);
   }
 
   private CouponEntity createCouponEntity(Coupon coupon) {
@@ -40,7 +39,7 @@ public class JpaCouponRepositoryAdaptor implements CouponRepository {
   }
 
   private CouponEntity updateCouponEntity(Coupon coupon) {
-    return CouponEntity.from(coupon);
+    return CouponEntity.fromDomain(coupon);
   }
 
   private boolean isNewCoupon(Coupon coupon) {

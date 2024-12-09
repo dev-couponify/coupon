@@ -1,6 +1,7 @@
 package com.couponify.coupondomain.domain.issuedCoupon;
 
 import com.couponify.coupondomain.domain.coupon.Coupon;
+import com.couponify.coupondomain.infrastructure.jpa.issuedCoupon.IssuedCouponEntity;
 import lombok.Getter;
 
 @Getter
@@ -21,7 +22,7 @@ public class IssuedCoupon {
     this.isUsed = false;
   }
 
-  public IssuedCoupon(Long id, Long userId, Coupon coupon, boolean isUsed) {
+  private IssuedCoupon(Long id, Long userId, Coupon coupon, boolean isUsed) {
     this.id = id;
     this.userId = userId;
     this.coupon = coupon;
@@ -31,6 +32,15 @@ public class IssuedCoupon {
 
   public static IssuedCoupon create(Long userId, Coupon coupon) {
     return new IssuedCoupon(userId, coupon);
+  }
+
+  public static IssuedCoupon formEntity(IssuedCouponEntity issuedCouponEntity) {
+    return new IssuedCoupon(
+        issuedCouponEntity.getId(),
+        issuedCouponEntity.getUserId(),
+        Coupon.fromEntity(issuedCouponEntity.getCoupon()),
+        issuedCouponEntity.getIsUsed()
+    );
   }
 
 }
