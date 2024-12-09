@@ -1,4 +1,4 @@
-package com.couponify.couponapi.persentation.request;
+package com.couponify.couponapi.presentation.request;
 
 import com.couponify.coupondomain.domain.coupon.CouponStatus;
 import jakarta.validation.constraints.NotBlank;

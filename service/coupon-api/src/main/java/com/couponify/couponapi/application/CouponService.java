@@ -1,6 +1,8 @@
 package com.couponify.couponapi.application;
 
-import com.couponify.couponapi.application.dto.CouponCreateDto;
+import com.couponify.couponapi.exception.CouponErrorCode;
+import com.couponify.couponapi.exception.CouponException;
+import com.couponify.couponapi.presentation.request.CouponCreateRequest;
 import com.couponify.coupondomain.domain.coupon.Coupon;
 import com.couponify.coupondomain.domain.coupon.repository.CouponRepository;
 import com.couponify.coupondomain.domain.issuedCoupon.IssuedCoupon;
@@ -20,11 +22,11 @@ public class CouponService {
   private static final int COUPON_ISSUE_QUANTITY = 1;
 
   @Transactional
-  public Long create(CouponCreateDto couponCreateDto) {
+  public Long create(CouponCreateRequest couponCreateRequest) {
     final Coupon coupon = Coupon.create(
-        couponCreateDto.getName(),
-        couponCreateDto.getStatus(),
-        couponCreateDto.getQuantity()
+        couponCreateRequest.getName(),
+        couponCreateRequest.getStatus(),
+        couponCreateRequest.getQuantity()
     );
     final Coupon savedCoupon = couponRepository.save(coupon);
     return savedCoupon.getId();
@@ -44,9 +46,9 @@ public class CouponService {
     return savedIssuedCoupon.getId();
   }
 
-  public Coupon validateCoupon(Long couponId) {
+  private Coupon validateCoupon(Long couponId) {
     return couponRepository.findById(couponId).orElseThrow(
-        () -> new IllegalArgumentException("존재하지 않는 쿠폰입니다.") // TODO 커스텀 예외 처리
+        () -> new CouponException(CouponErrorCode.COUPON_NOT_FOUND, couponId)
     );
   }
 

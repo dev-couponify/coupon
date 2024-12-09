@@ -1,8 +1,7 @@
-package com.couponify.couponapi.persentation;
+package com.couponify.couponapi.presentation;
 
 import com.couponify.couponapi.application.CouponService;
-import com.couponify.couponapi.application.dto.CouponCreateDto;
-import com.couponify.couponapi.persentation.request.CouponCreateRequest;
+import com.couponify.couponapi.presentation.request.CouponCreateRequest;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +22,13 @@ public class CouponController {
 
   @PostMapping
   public ResponseEntity<Void> create(@Valid @RequestBody CouponCreateRequest couponCreateRequest) {
-    CouponCreateDto couponCreateDto = CouponControllerMapper.toCouponCreateDto(couponCreateRequest);
-    Long savedCouponId = couponService.create(couponCreateDto);
+    Long savedCouponId = couponService.create(couponCreateRequest);
     return ResponseEntity.created(URI.create("/coupon/" + savedCouponId)).build();
   }
 
   @PostMapping("/issue/{couponId}")
-  public ResponseEntity<Void> issue(@PathVariable(name = "couponId") Long couponId,
+  public ResponseEntity<Void> issue(
+      @PathVariable(name = "couponId") Long couponId,
       @RequestParam(name = "user-id") Long userId) {
     Long savedIssuedCouponId = couponService.issue(couponId, userId);
     return ResponseEntity.created(URI.create("/issuedCoupon/" + savedIssuedCouponId)).build();
