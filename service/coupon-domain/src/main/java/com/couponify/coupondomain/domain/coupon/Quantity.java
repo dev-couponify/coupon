@@ -18,7 +18,7 @@ public class Quantity {
   }
 
   private void validateValue(int value) {
-    if (value <= 0) {
+    if (value < 0) {
       throw new IllegalArgumentException("쿠폰 수량은 0 이상이어야 합니다.");
     }
   }

@@ -1,5 +1,6 @@
 package com.couponify.coupondomain.infrastructure.jpa.coupon;
 
+import com.couponify.coupondomain.domain.coupon.Coupon;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -45,6 +46,15 @@ public class CouponEntity {
 
   public static CouponEntity create(String name, String status, Integer quantity) {
     return new CouponEntity(name, status, quantity);
+  }
+
+  public static CouponEntity from(Coupon coupon) {
+    return new CouponEntity(
+        coupon.getId(),
+        coupon.getName(),
+        coupon.getStatus().name(),
+        coupon.getQuantity().getQuantity()
+    );
   }
 
 }

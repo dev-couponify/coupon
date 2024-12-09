@@ -15,11 +15,12 @@ public class JpaCouponRepositoryAdaptor implements CouponRepository {
 
   @Override
   public Coupon save(Coupon coupon) {
-    CouponEntity couponEntity = CouponEntity.create(
-        coupon.getName(),
-        coupon.getStatus().name(),
-        coupon.getQuantity().getQuantity()
-    );
+    CouponEntity couponEntity;
+    if (isNewCoupon(coupon)) {
+      couponEntity = createCouponEntity(coupon);
+    } else {
+      couponEntity = updateCouponEntity(coupon);
+    }
     CouponEntity savedCouponEntity = jpaCouponRepository.save(couponEntity);
     return CouponDomainMapper.toDomain(savedCouponEntity);
   }
@@ -28,6 +29,22 @@ public class JpaCouponRepositoryAdaptor implements CouponRepository {
   public Optional<Coupon> findById(Long couponId) {
     return jpaCouponRepository.findById(couponId)
         .map(CouponDomainMapper::toDomain);
+  }
+
+  private CouponEntity createCouponEntity(Coupon coupon) {
+    return CouponEntity.create(
+        coupon.getName(),
+        coupon.getStatus().name(),
+        coupon.getQuantity().getQuantity()
+    );
+  }
+
+  private CouponEntity updateCouponEntity(Coupon coupon) {
+    return CouponEntity.from(coupon);
+  }
+
+  private boolean isNewCoupon(Coupon coupon) {
+    return coupon.getId() == null;
   }
 
 }
