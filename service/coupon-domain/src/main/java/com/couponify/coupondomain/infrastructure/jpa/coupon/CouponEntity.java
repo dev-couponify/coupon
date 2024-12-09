@@ -36,6 +36,13 @@ public class CouponEntity {
     this.quantity = quantity;
   }
 
+  public CouponEntity(Long id, String name, String status, Integer quantity) {
+    this.id = id;
+    this.name = name;
+    this.status = status;
+    this.quantity = quantity;
+  }
+
   public static CouponEntity create(String name, String status, Integer quantity) {
     return new CouponEntity(name, status, quantity);
   }

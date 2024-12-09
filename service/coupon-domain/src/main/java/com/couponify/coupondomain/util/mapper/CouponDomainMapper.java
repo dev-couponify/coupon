@@ -2,7 +2,6 @@ package com.couponify.coupondomain.util.mapper;
 
 import com.couponify.coupondomain.domain.coupon.Coupon;
 import com.couponify.coupondomain.domain.coupon.CouponStatus;
-import com.couponify.coupondomain.domain.coupon.Quantity;
 import com.couponify.coupondomain.infrastructure.jpa.coupon.CouponEntity;
 
 public class CouponDomainMapper {
@@ -12,8 +11,18 @@ public class CouponDomainMapper {
         couponEntity.getId(),
         couponEntity.getName(),
         CouponStatus.valueOf(couponEntity.getStatus()),
-        new Quantity(couponEntity.getQuantity())
+        couponEntity.getQuantity()
     );
   }
+
+  public static CouponEntity toEntity(Coupon coupon) {
+    return new CouponEntity(
+        coupon.getId(),
+        coupon.getName(),
+        coupon.getStatus().name(),
+        coupon.getQuantity().getQuantity()
+    );
+  }
+
 
 }
