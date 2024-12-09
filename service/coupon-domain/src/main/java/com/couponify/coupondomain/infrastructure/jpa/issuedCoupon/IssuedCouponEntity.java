@@ -1,10 +1,13 @@
 package com.couponify.coupondomain.infrastructure.jpa.issuedCoupon;
 
+import com.couponify.coupondomain.infrastructure.jpa.coupon.CouponEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,22 +25,23 @@ public class IssuedCouponEntity {
   private Long id;
 
   @Column(nullable = false)
-  private Long usedId;
+  private Long userId;
 
-  @Column(nullable = false)
-  private Long couponId;
+  @ManyToOne
+  @JoinColumn(name = "coupon_id")
+  private CouponEntity coupon;
 
   @Column(nullable = false)
   private Boolean isUsed;
 
-  private IssuedCouponEntity(Long usedId, Long couponId, Boolean isUsed) {
-    this.usedId = usedId;
-    this.couponId = couponId;
+  private IssuedCouponEntity(Long userId, CouponEntity coupon, Boolean isUsed) {
+    this.userId = userId;
+    this.coupon = coupon;
     this.isUsed = isUsed;
   }
 
-  public static IssuedCouponEntity create(Long usedId, Long couponId, Boolean isUsed) {
-    return new IssuedCouponEntity(usedId, couponId, isUsed);
+  public static IssuedCouponEntity create(Long userId, CouponEntity coupon, Boolean isUsed) {
+    return new IssuedCouponEntity(userId, coupon, isUsed);
   }
 
 }
