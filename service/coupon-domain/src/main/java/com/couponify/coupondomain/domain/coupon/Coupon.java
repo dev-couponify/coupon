@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,25 +36,28 @@ public class Coupon {
   @Embedded
   private Quantity quantity;
 
-  private Coupon(String name, CouponStatus status, Quantity quantity) {
+  @Column(nullable = false)
+  private LocalDateTime issueStartAt;
+
+  @Column(nullable = false)
+  private LocalDateTime issueEndAt;
+
+  private Coupon(String name, CouponStatus status, Quantity quantity, LocalDateTime issueStartAt,
+      LocalDateTime issueEndAt) {
     this.name = name;
     this.status = status;
     this.quantity = quantity;
+    this.issueStartAt = issueStartAt;
+    this.issueEndAt = issueEndAt;
   }
 
-  private Coupon(Long id, String name, CouponStatus status, Quantity quantity) {
-    this.id = id;
-    this.name = name;
-    this.status = status;
-    this.quantity = quantity;
-  }
-
-  public static Coupon of(String name, CouponStatus status, int quantity) {
-    return new Coupon(name, status, new Quantity(quantity));
+  public static Coupon of(String name, CouponStatus status, int quantity,
+      LocalDateTime issueStartAt, LocalDateTime issueEndAt) {
+    return new Coupon(name, status, new Quantity(quantity), issueStartAt, issueEndAt);
   }
 
   public void issue(int quantity) {
-    checkIssuable(quantity);
+    validateIssuable(quantity);
     decreaseQuantity(quantity);
   }
 
@@ -63,14 +67,29 @@ public class Coupon {
     }
   }
 
-  private void checkIssuable(int quantity) {
-    if (!this.status.isIssuable() || !isIssuable(quantity)) {
-      throw new IllegalArgumentException("쿠폰 발급이 불가합니다. 상태 또는 수량이 발급 조건을 충족하지 않습니다.");
+  private void validateIssuable(int quantity) {
+    validateIssueStatus();
+    validateIssueQuantity(quantity);
+    validateIssuePeriod();
+  }
+
+  private void validateIssueStatus() {
+    if (!this.status.isIssuable()) {
+      throw new IllegalArgumentException("쿠폰 발급 가능 상태가 아닙니다.");
     }
   }
 
-  private boolean isIssuable(int quantity) {
-    return this.quantity.isSufficientFor(quantity);
+  private void validateIssueQuantity(int quantity) {
+    if (!this.quantity.isSufficientFor(quantity)) {
+      throw new IllegalArgumentException("쿠폰 수량이 부족합니다.");
+    }
+  }
+
+  private void validateIssuePeriod() {
+    if (!this.issueStartAt.isBefore(LocalDateTime.now()) || !this.issueEndAt.isAfter(
+        LocalDateTime.now())) {
+      throw new IllegalArgumentException("쿠폰 발급 기간이 아닙니다.");
+    }
   }
 
   private void decreaseQuantity(int quantity) {
