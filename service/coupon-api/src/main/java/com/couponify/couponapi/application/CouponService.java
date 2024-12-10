@@ -19,7 +19,7 @@ public class CouponService {
   private final CouponRepository couponRepository;
   private final IssuedCouponRepository issuedCouponRepository;
 
-  private static final int COUPON_ISSUE_QUANTITY = 1;
+  private static final int QUANTITY_TO_ISSUE_COUPON = 1;
 
   @Transactional
   public Long create(CouponCreateRequest couponCreateRequest) {
@@ -31,7 +31,7 @@ public class CouponService {
   @Transactional
   public Long issue(Long couponId, Long userId) {
     final Coupon coupon = validateCoupon(couponId);
-    coupon.issue(COUPON_ISSUE_QUANTITY);
+    coupon.issue(QUANTITY_TO_ISSUE_COUPON);
     couponRepository.save(coupon);
 
     //TODO User 검증 필요

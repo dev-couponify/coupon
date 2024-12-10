@@ -53,18 +53,22 @@ public class Coupon {
   }
 
   public void issue(int quantity) {
-    checkIssuable();
+    checkIssuable(quantity);
     decreaseQuantity(quantity);
   }
 
-  private void checkIssuable() {
-    if (!this.status.isIssuable()) {
-      throw new IllegalArgumentException("쿠폰 발급이 불가합니다.");
+  private void checkIssuable(int quantity) {
+    if (!this.status.isIssuable() || !isIssuable(quantity)) {
+      throw new IllegalArgumentException("쿠폰 발급이 불가합니다. 상태 또는 수량이 발급 조건을 충족하지 않습니다.");
     }
   }
 
-  public void decreaseQuantity(int quantity) {
-    this.quantity.subtract(quantity);
+  private boolean isIssuable(int quantity) {
+    return this.quantity.getQuantity() >= quantity;
+  }
+
+  private void decreaseQuantity(int quantity) {
+    this.quantity.decrease(quantity);
   }
 
 }

@@ -13,28 +13,28 @@ public class Quantity {
   private int quantity;
 
   public Quantity(int quantity) {
-    validateValue(quantity);
+    validateQuantity(quantity);
     this.quantity = quantity;
   }
 
-  public void subtract(int value) {
-    validateValue(this.quantity - value);
-    this.quantity -= value;
+  public void decrease(int amount) {
+    validateQuantity(this.quantity - amount);
+    this.quantity -= amount;
   }
 
-  public void add(int value) {
-    validateValue(this.quantity + value);
-    this.quantity += value;
+  public void increase(int amount) {
+    validateQuantity(this.quantity + amount);
+    this.quantity += amount;
   }
 
-  private void validateValue(int value) {
-    if (isInvalidQuantity(value)) {
+  private void validateQuantity(int quantity) {
+    if (isInvalidQuantity(quantity)) {
       throw new IllegalArgumentException("쿠폰 수량은 0 이상이어야 합니다.");
     }
   }
 
-  private boolean isInvalidQuantity(int value) {
-    return value < 0;
+  private boolean isInvalidQuantity(int quantity) {
+    return quantity < 0;
   }
 
 }
