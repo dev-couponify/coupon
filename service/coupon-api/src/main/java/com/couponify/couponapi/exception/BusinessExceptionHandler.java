@@ -1,4 +1,4 @@
-package com.sparta.order.couponapi.common.exception;
+package com.couponify.couponapi.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

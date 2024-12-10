@@ -1,5 +1,6 @@
-package com.couponify.coupondomain.infrastructure.jpa;
+package com.couponify.coupondomain.infrastructure.jpa.coupon;
 
+import com.couponify.coupondomain.domain.coupon.Coupon;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +19,7 @@ public class CouponEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "coupon_id")
   private Long id;
 
   @Column(length = 100, nullable = false)
@@ -35,8 +37,24 @@ public class CouponEntity {
     this.quantity = quantity;
   }
 
+  private CouponEntity(Long id, String name, String status, Integer quantity) {
+    this.id = id;
+    this.name = name;
+    this.status = status;
+    this.quantity = quantity;
+  }
+
   public static CouponEntity create(String name, String status, Integer quantity) {
     return new CouponEntity(name, status, quantity);
+  }
+
+  public static CouponEntity fromDomain(Coupon coupon) {
+    return new CouponEntity(
+        coupon.getId(),
+        coupon.getName(),
+        coupon.getStatus().name(),
+        coupon.getQuantity().getQuantity()
+    );
   }
 
 }

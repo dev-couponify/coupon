@@ -1,4 +1,4 @@
-package com.couponify.coupondomain.infrastructure.jpa;
+package com.couponify.coupondomain.infrastructure.jpa.coupon;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

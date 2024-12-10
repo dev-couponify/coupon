@@ -1,4 +1,4 @@
-package com.sparta.order.couponapi.common.exception;
+package com.couponify.couponapi.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
