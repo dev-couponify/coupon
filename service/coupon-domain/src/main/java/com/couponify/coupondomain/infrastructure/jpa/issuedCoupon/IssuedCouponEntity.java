@@ -1,8 +1,9 @@
 package com.couponify.coupondomain.infrastructure.jpa.issuedCoupon;
 
-import com.couponify.coupondomain.infrastructure.jpa.coupon.CouponEntity;
+import com.couponify.coupondomain.domain.coupon.Coupon;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,20 +28,20 @@ public class IssuedCouponEntity {
   @Column(nullable = false)
   private Long userId;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "coupon_id")
-  private CouponEntity coupon;
+  private Coupon coupon;
 
   @Column(nullable = false)
   private Boolean isUsed;
 
-  private IssuedCouponEntity(Long userId, CouponEntity coupon, Boolean isUsed) {
+  private IssuedCouponEntity(Long userId, Coupon coupon, Boolean isUsed) {
     this.userId = userId;
     this.coupon = coupon;
     this.isUsed = isUsed;
   }
 
-  public static IssuedCouponEntity create(Long userId, CouponEntity coupon, Boolean isUsed) {
+  public static IssuedCouponEntity create(Long userId, Coupon coupon, Boolean isUsed) {
     return new IssuedCouponEntity(userId, coupon, isUsed);
   }
 

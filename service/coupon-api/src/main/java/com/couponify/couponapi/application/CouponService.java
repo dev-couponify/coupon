@@ -23,11 +23,7 @@ public class CouponService {
 
   @Transactional
   public Long create(CouponCreateRequest couponCreateRequest) {
-    final Coupon coupon = Coupon.create(
-        couponCreateRequest.getName(),
-        couponCreateRequest.getStatus(),
-        couponCreateRequest.getQuantity()
-    );
+    final Coupon coupon = CouponCreateRequest.toDomain(couponCreateRequest);
     final Coupon savedCoupon = couponRepository.save(coupon);
     return savedCoupon.getId();
   }

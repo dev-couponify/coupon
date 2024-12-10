@@ -1,5 +1,6 @@
 package com.couponify.couponapi.presentation.request;
 
+import com.couponify.coupondomain.domain.coupon.Coupon;
 import com.couponify.coupondomain.domain.coupon.CouponStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,5 +19,9 @@ public class CouponCreateRequest {
   private CouponStatus status;
   @Positive(message = "수량은 0보다 커야 합니다.")
   private Integer quantity;
+
+  public static Coupon toDomain(CouponCreateRequest request) {
+    return Coupon.create(request.name, request.status, request.getQuantity());
+  }
 
 }

@@ -38,7 +38,7 @@ public class IssuedCoupon {
     return new IssuedCoupon(
         issuedCouponEntity.getId(),
         issuedCouponEntity.getUserId(),
-        Coupon.fromEntity(issuedCouponEntity.getCoupon()),
+        issuedCouponEntity.getCoupon(),
         issuedCouponEntity.getIsUsed()
     );
   }
