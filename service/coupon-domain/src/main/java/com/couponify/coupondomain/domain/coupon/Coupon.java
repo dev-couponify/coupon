@@ -57,6 +57,12 @@ public class Coupon {
     decreaseQuantity(quantity);
   }
 
+  public void updateStatus(CouponStatus newStatus) {
+    if (this.status != newStatus) {
+      this.status = newStatus;
+    }
+  }
+
   private void checkIssuable(int quantity) {
     if (!this.status.isIssuable() || !isIssuable(quantity)) {
       throw new IllegalArgumentException("쿠폰 발급이 불가합니다. 상태 또는 수량이 발급 조건을 충족하지 않습니다.");
@@ -64,11 +70,14 @@ public class Coupon {
   }
 
   private boolean isIssuable(int quantity) {
-    return this.quantity.getQuantity() >= quantity;
+    return this.quantity.isSufficientFor(quantity);
   }
 
   private void decreaseQuantity(int quantity) {
     this.quantity.decrease(quantity);
+    if (this.quantity.isNoQuantity()) {
+      updateStatus(CouponStatus.SOLD_OUT);
+    }
   }
 
 }

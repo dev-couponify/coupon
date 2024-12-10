@@ -27,6 +27,14 @@ public class Quantity {
     this.quantity += amount;
   }
 
+  public boolean isNoQuantity() {
+    return this.quantity == 0;
+  }
+
+  public boolean isSufficientFor(int quantityToCompare) {
+    return this.quantity >= quantityToCompare;
+  }
+
   private void validateQuantity(int quantity) {
     if (isInvalidQuantity(quantity)) {
       throw new IllegalArgumentException("쿠폰 수량은 0 이상이어야 합니다.");
