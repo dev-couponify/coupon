@@ -36,7 +36,7 @@ public class CouponService {
 
     //TODO User 검증 필요
 
-    final IssuedCoupon issuedCoupon = IssuedCoupon.create(userId, coupon);
+    final IssuedCoupon issuedCoupon = IssuedCoupon.of(userId, coupon);
     final IssuedCoupon savedIssuedCoupon = issuedCouponRepository.save(issuedCoupon);
 
     return savedIssuedCoupon.getId();

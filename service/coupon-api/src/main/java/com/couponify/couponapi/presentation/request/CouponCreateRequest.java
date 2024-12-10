@@ -21,7 +21,7 @@ public class CouponCreateRequest {
   private Integer quantity;
 
   public static Coupon toDomain(CouponCreateRequest request) {
-    return Coupon.create(request.name, request.status, request.getQuantity());
+    return Coupon.of(request.name, request.status, request.getQuantity());
   }
 
 }

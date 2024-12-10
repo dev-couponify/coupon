@@ -13,13 +13,7 @@ public class IssuedCouponRepositoryImpl implements IssuedCouponRepository {
 
   @Override
   public IssuedCoupon save(IssuedCoupon issuedCoupon) {
-    IssuedCouponEntity issuedCouponEntity = IssuedCouponEntity.create(
-        issuedCoupon.getUserId(),
-        issuedCoupon.getCoupon(),
-        issuedCoupon.isUsed()
-    );
-    IssuedCouponEntity savedIssuedCouponEntity = jpaIssuedCouponRepository.save(issuedCouponEntity);
-    return IssuedCoupon.formEntity(savedIssuedCouponEntity);
+    return jpaIssuedCouponRepository.save(issuedCoupon);
   }
 
 }

@@ -48,7 +48,7 @@ public class Coupon {
     this.quantity = quantity;
   }
 
-  public static Coupon create(String name, CouponStatus status, int quantity) {
+  public static Coupon of(String name, CouponStatus status, int quantity) {
     return new Coupon(name, status, new Quantity(quantity));
   }
 
