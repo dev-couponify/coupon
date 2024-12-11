@@ -7,10 +7,14 @@ import com.couponify.coupondomain.domain.coupon.Coupon;
 import com.couponify.coupondomain.domain.coupon.repository.CouponRepository;
 import com.couponify.coupondomain.domain.issuedCoupon.IssuedCoupon;
 import com.couponify.coupondomain.domain.issuedCoupon.repository.IssuedCouponRepository;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j(topic = "CouponService")
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -19,15 +23,11 @@ public class CouponService {
   private final CouponRepository couponRepository;
   private final IssuedCouponRepository issuedCouponRepository;
 
-  private static final int COUPON_ISSUE_QUANTITY = 1;
+  private static final int QUANTITY_TO_ISSUE_COUPON = 1;
 
   @Transactional
   public Long create(CouponCreateRequest couponCreateRequest) {
-    final Coupon coupon = Coupon.create(
-        couponCreateRequest.getName(),
-        couponCreateRequest.getStatus(),
-        couponCreateRequest.getQuantity()
-    );
+    final Coupon coupon = CouponCreateRequest.toDomain(couponCreateRequest);
     final Coupon savedCoupon = couponRepository.save(coupon);
     return savedCoupon.getId();
   }
@@ -35,15 +35,24 @@ public class CouponService {
   @Transactional
   public Long issue(Long couponId, Long userId) {
     final Coupon coupon = validateCoupon(couponId);
-    coupon.issue(COUPON_ISSUE_QUANTITY);
-    couponRepository.save(coupon);
+    coupon.issue(QUANTITY_TO_ISSUE_COUPON);
 
     //TODO User 검증 필요
 
-    final IssuedCoupon issuedCoupon = IssuedCoupon.create(userId, coupon);
+    final IssuedCoupon issuedCoupon = IssuedCoupon.of(userId, coupon);
     final IssuedCoupon savedIssuedCoupon = issuedCouponRepository.save(issuedCoupon);
 
     return savedIssuedCoupon.getId();
+  }
+
+  @Transactional
+  public void expire() {
+    List<Coupon> expiredCoupons = couponRepository.findExpiredCoupons(LocalDateTime.now());
+    if (expiredCoupons.isEmpty()) {
+      return;
+    }
+    expiredCoupons.forEach(Coupon::expire);
+    log.info("Expired {} coupons", expiredCoupons.size());
   }
 
   private Coupon validateCoupon(Long couponId) {
