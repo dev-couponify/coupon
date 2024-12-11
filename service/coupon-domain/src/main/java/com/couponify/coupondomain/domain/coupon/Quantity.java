@@ -27,11 +27,11 @@ public class Quantity {
     this.quantity += amount;
   }
 
-  public boolean isNoQuantity() {
+  public boolean isZero() {
     return this.quantity == 0;
   }
 
-  public boolean isSufficientFor(int quantityToCompare) {
+  public boolean isGreaterThanOrEqualTo(int quantityToCompare) {
     return this.quantity >= quantityToCompare;
   }
 

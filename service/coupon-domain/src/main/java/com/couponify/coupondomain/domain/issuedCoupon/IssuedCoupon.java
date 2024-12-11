@@ -4,6 +4,7 @@ import com.couponify.coupondomain.domain.coupon.Coupon;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,7 +30,11 @@ public class IssuedCoupon {
   private Long userId;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "coupon_id")
+  @JoinColumn(
+      name = "coupon_id",
+      nullable = false,
+      foreignKey = @ForeignKey(name = "FK_ISSUED_COUPON_COUPON_ID")
+  )
   private Coupon coupon;
 
   @Column(nullable = false)

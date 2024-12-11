@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum CouponStatus {
 
-  AVAILABLE("발급 가능"), SOLD_OUT("수량 소진"), EXPIRED("발급 만료");
+  AVAILABLE("발급 가능"), SOLD_OUT("수량 소진"), EXPIRED("기한 만료");
 
   private final String description;
 
@@ -14,6 +14,6 @@ public enum CouponStatus {
   }
 
   public boolean isIssuable() {
-    return this.equals(AVAILABLE);
+    return this == AVAILABLE;
   }
 }

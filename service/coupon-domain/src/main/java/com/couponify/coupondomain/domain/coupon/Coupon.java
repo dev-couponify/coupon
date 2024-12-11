@@ -84,21 +84,25 @@ public class Coupon {
   }
 
   private void validateIssueQuantity(int quantity) {
-    if (!this.quantity.isSufficientFor(quantity)) {
+    if (!this.quantity.isGreaterThanOrEqualTo(quantity)) {
       throw new IllegalArgumentException("쿠폰 수량이 부족합니다.");
     }
   }
 
   private void validateIssuePeriod() {
-    if (!this.issueStartAt.isBefore(LocalDateTime.now()) || !this.issueEndAt.isAfter(
-        LocalDateTime.now())) {
+    if (!isIssuePeriod()) {
       throw new IllegalArgumentException("쿠폰 발급 기간이 아닙니다.");
     }
   }
 
+  private boolean isIssuePeriod() {
+    return (this.issueStartAt.isBefore(LocalDateTime.now())
+        && this.issueEndAt.isAfter(LocalDateTime.now()));
+  }
+
   private void decreaseQuantity(int quantity) {
     this.quantity.decrease(quantity);
-    if (this.quantity.isNoQuantity()) {
+    if (this.quantity.isZero()) {
       updateStatus(CouponStatus.SOLD_OUT);
     }
   }
