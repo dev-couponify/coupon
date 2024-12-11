@@ -3,3 +3,7 @@ spring:
     name: coupon-api
   profiles:
     active: local
+
+schedule:
+  cron: "0 0 0 * * *"
+  use: true

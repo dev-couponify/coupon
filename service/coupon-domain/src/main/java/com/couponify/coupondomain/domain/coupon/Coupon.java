@@ -61,7 +61,11 @@ public class Coupon {
     decreaseQuantity(quantity);
   }
 
-  public void updateStatus(CouponStatus newStatus) {
+  public void expire() {
+    updateStatus(CouponStatus.EXPIRED);
+  }
+
+  private void updateStatus(CouponStatus newStatus) {
     if (this.status != newStatus) {
       this.status = newStatus;
     }
