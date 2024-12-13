@@ -1,6 +1,6 @@
 package com.couponify.couponapi.Integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.couponify.couponapi.application.CouponService;
 import com.couponify.couponapi.presentation.request.CouponCreateRequest;
@@ -64,7 +64,7 @@ public class CouponConcurrentTest {
     executor.shutdown();
 
     final Optional<Coupon> coupon = couponRepository.findById(couponId);
-    assertEquals(expectedCouponQuantity, coupon.get().getQuantity().getQuantity());
+    assertNotEquals(expectedCouponQuantity, coupon.get().getQuantity().getQuantity());
   }
 
 

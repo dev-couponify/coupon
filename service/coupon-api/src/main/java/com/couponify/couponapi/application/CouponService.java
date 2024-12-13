@@ -36,6 +36,7 @@ public class CouponService {
   public Long issue(Long couponId, Long userId) {
     final Coupon coupon = validateCoupon(couponId);
     coupon.issue(QUANTITY_TO_ISSUE_COUPON);
+    couponRepository.flush();
 
     //TODO User 검증 필요
 

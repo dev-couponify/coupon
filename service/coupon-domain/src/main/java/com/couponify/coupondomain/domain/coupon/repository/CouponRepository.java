@@ -14,4 +14,6 @@ public interface CouponRepository {
 
   List<Coupon> findExpiredCoupons(LocalDateTime now);
 
+  void flush();
+
 }
