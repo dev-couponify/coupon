@@ -1,6 +1,7 @@
-package com.couponify.couponapi.application;
+package com.couponify.couponapi.unit.application;
 
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -11,6 +12,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import com.couponify.couponapi.application.CouponService;
+import com.couponify.couponapi.exception.CouponErrorCode;
+import com.couponify.couponapi.exception.CouponException;
 import com.couponify.couponapi.presentation.request.CouponCreateRequest;
 import com.couponify.coupondomain.domain.coupon.Coupon;
 import com.couponify.coupondomain.domain.coupon.CouponStatus;
@@ -90,6 +94,26 @@ public class CouponServiceTest {
     verify(coupon).issue(anyInt());
     verify(couponRepository).findById(anyLong());
     verify(issuedCouponRepository).save(any(IssuedCoupon.class));
+  }
+
+  @Test
+  @DisplayName("존재하지 않는 쿠폰을 발급할 경우 예외가 발생한다.")
+  void issueNotExistingCouponThrowsException() {
+    // given
+    final Long userId = 1L;
+    final Long couponId = 1L;
+
+    given(couponRepository.findById(any(Long.class))).willReturn(Optional.empty());
+
+    // when & then
+    assertThatThrownBy(() -> couponService.issue(userId, couponId))
+        .isInstanceOf(CouponException.class)
+        .hasFieldOrPropertyWithValue("errorCode", CouponErrorCode.COUPON_NOT_FOUND);
+
+    verify(couponRepository).findById(anyLong());
+    verifyNoMoreInteractions(couponRepository);
+    verifyNoMoreInteractions(issuedCouponRepository);
+    verifyNoMoreInteractions(coupon);
   }
 
   @Test
