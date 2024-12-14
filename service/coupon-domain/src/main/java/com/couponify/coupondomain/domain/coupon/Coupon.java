@@ -44,6 +44,7 @@ public class Coupon {
 
   private Coupon(String name, CouponStatus status, Quantity quantity, LocalDateTime issueStartAt,
       LocalDateTime issueEndAt) {
+    validateSetPeriod(issueStartAt, issueEndAt);
     this.name = name;
     this.status = status;
     this.quantity = quantity;
@@ -63,6 +64,18 @@ public class Coupon {
 
   public void expire() {
     updateStatus(CouponStatus.EXPIRED);
+  }
+
+  private void validateSetPeriod(LocalDateTime issueStartAt, LocalDateTime issueEndAt) {
+    if (!isValidPeriod(issueStartAt, issueEndAt)) {
+      throw new IllegalArgumentException("쿠폰 생성시 발급 시작 일시와 종료 일시는 미래여야 합니다.");
+    }
+  }
+
+  private boolean isValidPeriod(LocalDateTime issueStartAt, LocalDateTime issueEndAt) {
+    return (issueStartAt.isAfter(LocalDateTime.now()) &&
+        issueEndAt.isAfter(LocalDateTime.now()) &&
+        !issueStartAt.isEqual(issueEndAt));
   }
 
   private void updateStatus(CouponStatus newStatus) {

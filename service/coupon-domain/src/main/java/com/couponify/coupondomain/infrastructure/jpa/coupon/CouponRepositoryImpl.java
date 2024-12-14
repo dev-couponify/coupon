@@ -29,4 +29,9 @@ public class CouponRepositoryImpl implements CouponRepository {
     return jpaCouponRepository.findAllByIssueEndAtBefore(now);
   }
 
+  @Override
+  public void flush() {
+    jpaCouponRepository.flush();
+  }
+
 }
