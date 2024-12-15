@@ -66,6 +66,10 @@ public class Coupon {
     updateStatus(CouponStatus.EXPIRED);
   }
 
+  public int getQuantity() {
+    return this.quantity.getValue();
+  }
+
   private void validateSetPeriod(LocalDateTime issueStartAt, LocalDateTime issueEndAt) {
     if (!isValidPeriod(issueStartAt, issueEndAt)) {
       throw new IllegalArgumentException("쿠폰 생성시 발급 시작 일시와 종료 일시는 미래여야 합니다.");
