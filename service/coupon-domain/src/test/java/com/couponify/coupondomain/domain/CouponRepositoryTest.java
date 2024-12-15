@@ -9,8 +9,6 @@ import static org.mockito.Mockito.when;
 
 import com.couponify.coupondomain.domain.coupon.Coupon;
 import com.couponify.coupondomain.domain.coupon.repository.CouponRepository;
-import com.couponify.coupondomain.infrastructure.jpa.coupon.CouponRepositoryImpl;
-import com.couponify.coupondomain.infrastructure.jpa.coupon.JpaCouponRepository;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,25 +19,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 
+@Import(TestConfig.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class CouponRepositoryTest {
 
   @Autowired
   private CouponRepository couponRepository;
-
-  @TestConfiguration
-  static class TestConfig {
-
-    @Bean
-    public CouponRepository couponRepository(JpaCouponRepository jpaCouponRepository) {
-      return new CouponRepositoryImpl(jpaCouponRepository);
-    } // JPA 빈이 아닌 빈을 등록하는 과정
-
-  }
 
   @Test
   @DisplayName("쿠폰을 저장할 수 있다.")
