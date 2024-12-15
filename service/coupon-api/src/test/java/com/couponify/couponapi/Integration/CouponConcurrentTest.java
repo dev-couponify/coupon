@@ -1,6 +1,6 @@
 package com.couponify.couponapi.Integration;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.couponify.couponapi.application.CouponService;
 import com.couponify.couponapi.presentation.request.CouponCreateRequest;
@@ -29,17 +29,16 @@ public class CouponConcurrentTest {
   private IssuedCouponRepository issuedCouponRepository;
 
   @Test
-  @DisplayName("100명의 사용자가 동시에 쿠폰을 발급할 수 있다.")
+  @DisplayName("100명의 사용자가 동시에 쿠폰을 발급할 때, 쿠폰 수량이 정상적으로 감소하고 100개의 쿠폰이 발급된다.")
   void issueCouponWith100Users() throws InterruptedException {
     final int threadCount = 100;
-    final CouponCreateRequest request = new CouponCreateRequest
-        (
-            "샘플 쿠폰",
-            CouponStatus.AVAILABLE,
-            100,
-            LocalDateTime.now().plusSeconds(1),
-            LocalDateTime.now().plusDays(3)
-        );
+    final CouponCreateRequest request = new CouponCreateRequest(
+        "샘플 쿠폰",
+        CouponStatus.AVAILABLE,
+        100,
+        LocalDateTime.now().plusSeconds(1),
+        LocalDateTime.now().plusDays(3)
+    );
     final Long couponId = couponRepository.save(CouponCreateRequest.toDomain(request)).getId();
     final Long userId = 1L;
     final int expectedCouponQuantity = 0;
@@ -64,7 +63,7 @@ public class CouponConcurrentTest {
     executor.shutdown();
 
     final Optional<Coupon> coupon = couponRepository.findById(couponId);
-    assertNotEquals(expectedCouponQuantity, coupon.get().getQuantity().getQuantity());
+    assertEquals(expectedCouponQuantity, coupon.get().getQuantity().getQuantity());
   }
 
 
