@@ -71,7 +71,7 @@ public class Coupon {
   }
 
   private void validateSetPeriod(LocalDateTime issueStartAt, LocalDateTime issueEndAt) {
-    if (!isValidPeriod(issueStartAt, issueEndAt)) {
+    if (isNotValidPeriod(issueStartAt, issueEndAt)) {
       throw new IllegalArgumentException("쿠폰 생성시 발급 시작 일시와 종료 일시는 미래여야 합니다.");
     }
   }
@@ -80,6 +80,12 @@ public class Coupon {
     return (issueStartAt.isAfter(LocalDateTime.now()) &&
         issueEndAt.isAfter(LocalDateTime.now()) &&
         !issueStartAt.isEqual(issueEndAt));
+  }
+
+  private boolean isNotValidPeriod(LocalDateTime issueStartAt, LocalDateTime issueEndAt) {
+    return (!issueStartAt.isAfter(LocalDateTime.now()) ||
+        !issueEndAt.isAfter(LocalDateTime.now()) ||
+        issueStartAt.isEqual(issueEndAt));
   }
 
   private void updateStatus(CouponStatus newStatus) {
