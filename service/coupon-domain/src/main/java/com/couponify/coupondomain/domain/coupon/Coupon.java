@@ -1,5 +1,6 @@
 package com.couponify.coupondomain.domain.coupon;
 
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -32,8 +33,11 @@ public class Coupon {
   @Enumerated(value = EnumType.STRING)
   private CouponStatus status;
 
-  @Column(nullable = false)
   @Embedded
+  @AttributeOverride(
+      name = "value",
+      column = @Column(name = "quantity", nullable = false)
+  )
   private Quantity quantity;
 
   @Column(nullable = false)
