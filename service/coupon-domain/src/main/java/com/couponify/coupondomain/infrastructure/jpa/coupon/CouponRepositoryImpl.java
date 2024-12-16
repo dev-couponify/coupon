@@ -25,6 +25,11 @@ public class CouponRepositoryImpl implements CouponRepository {
   }
 
   @Override
+  public Optional<Coupon> findByIdForUpdate(Long couponId) {
+    return jpaCouponRepository.findByIdForUpdate(couponId);
+  }
+
+  @Override
   public List<Coupon> findExpiredCoupons(LocalDateTime now) {
     return jpaCouponRepository.findAllByIssueEndAtBefore(now);
   }

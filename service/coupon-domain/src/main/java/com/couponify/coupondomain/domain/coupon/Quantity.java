@@ -10,39 +10,39 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Quantity {
 
-  private int quantity;
+  private int value;
 
-  public Quantity(int quantity) {
-    validateQuantity(quantity);
-    this.quantity = quantity;
+  public Quantity(int value) {
+    validateValue(value);
+    this.value = value;
   }
 
   public void decrease(int amount) {
-    validateQuantity(this.quantity - amount);
-    this.quantity -= amount;
+    validateValue(this.value - amount);
+    this.value -= amount;
   }
 
   public void increase(int amount) {
-    validateQuantity(this.quantity + amount);
-    this.quantity += amount;
+    validateValue(this.value + amount);
+    this.value += amount;
   }
 
   public boolean isZero() {
-    return this.quantity == 0;
+    return this.value == 0;
   }
 
-  public boolean isGreaterThanOrEqualTo(int quantityToCompare) {
-    return this.quantity >= quantityToCompare;
+  public boolean isGreaterThanOrEqualTo(int valueToCompare) {
+    return this.value >= valueToCompare;
   }
 
-  private void validateQuantity(int quantity) {
-    if (isInvalidQuantity(quantity)) {
+  private void validateValue(int value) {
+    if (isInvalidValue(value)) {
       throw new IllegalArgumentException("쿠폰 수량은 0 이상이어야 합니다.");
     }
   }
 
-  private boolean isInvalidQuantity(int quantity) {
-    return quantity < 0;
+  private boolean isInvalidValue(int value) {
+    return value < 0;
   }
 
 }

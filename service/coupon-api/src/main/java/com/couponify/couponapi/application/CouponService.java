@@ -36,7 +36,6 @@ public class CouponService {
   public Long issue(Long couponId, Long userId) {
     final Coupon coupon = validateCoupon(couponId);
     coupon.issue(QUANTITY_TO_ISSUE_COUPON);
-    couponRepository.flush();
 
     //TODO User 검증 필요
 
@@ -57,7 +56,7 @@ public class CouponService {
   }
 
   private Coupon validateCoupon(Long couponId) {
-    return couponRepository.findById(couponId).orElseThrow(
+    return couponRepository.findByIdForUpdate(couponId).orElseThrow(
         () -> new CouponException(CouponErrorCode.COUPON_NOT_FOUND, couponId)
     );
   }
