@@ -3,6 +3,7 @@ package com.couponify.couponapi.Integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.couponify.couponapi.CouponFixture;
+import com.couponify.couponapi.application.CouponLockService;
 import com.couponify.couponapi.application.CouponService;
 import com.couponify.coupondomain.domain.coupon.Coupon;
 import com.couponify.coupondomain.domain.coupon.repository.CouponRepository;
@@ -20,6 +21,8 @@ public class CouponConcurrentTest {
 
   @Autowired
   private CouponService couponService;
+  @Autowired
+  private CouponLockService couponLockService;
   @Autowired
   private CouponRepository couponRepository;
   @Autowired
@@ -42,7 +45,7 @@ public class CouponConcurrentTest {
     for (int i = 0; i < threadCount; i++) {
       executor.submit(() -> {
         try {
-          couponService.issue(couponId, userId);
+          couponLockService.issueRLock(couponId, userId);
         } catch (Exception e) {
           e.printStackTrace();
         } finally {

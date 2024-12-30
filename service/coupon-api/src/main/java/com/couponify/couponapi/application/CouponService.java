@@ -56,7 +56,7 @@ public class CouponService {
   }
 
   private Coupon validateCoupon(Long couponId) {
-    return couponRepository.findByIdForUpdate(couponId).orElseThrow(
+    return couponRepository.findById(couponId).orElseThrow(
         () -> new CouponException(CouponErrorCode.COUPON_NOT_FOUND, couponId)
     );
   }
