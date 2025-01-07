@@ -1,5 +1,0 @@
-spring:
-  application:
-    name: coupon-domain
-  profiles:
-    active: local
