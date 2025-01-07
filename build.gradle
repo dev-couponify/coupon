@@ -37,8 +37,14 @@ subprojects {
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
+
+    jar.enabled = false
+    bootJar.enabled = false
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+jar.enabled = false
+bootJar.enabled = false
