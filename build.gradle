@@ -35,10 +35,17 @@ subprojects {
         annotationProcessor 'org.projectlombok:lombok'
         implementation 'org.springframework.boot:spring-boot-starter'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testImplementation 'com.h2database:h2'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
+
+    jar.enabled = false
+    bootJar.enabled = false
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+jar.enabled = false
+bootJar.enabled = false

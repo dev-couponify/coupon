@@ -1,0 +1,15 @@
+spring:
+  config.activate.on-profile: local
+  datasource:
+    url: jdbc:mysql://localhost:3308/couponify
+    username: user
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+---
+spring:
+  config.activate.on-profile: test
+  datasource:
+    hikari.jdbc-url: jdbc:h2:mem:test_db;MODE=MySQL;
+    username: sa
+    password:
