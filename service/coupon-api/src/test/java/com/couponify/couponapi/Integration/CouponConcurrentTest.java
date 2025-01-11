@@ -3,6 +3,7 @@ package com.couponify.couponapi.Integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.couponify.couponapi.CouponFixture;
+import com.couponify.couponapi.application.CouponLockService;
 import com.couponify.couponapi.application.CouponService;
 import com.couponify.coupondomain.domain.coupon.Coupon;
 import com.couponify.coupondomain.domain.coupon.repository.CouponRepository;
@@ -20,45 +21,47 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 public class CouponConcurrentTest {
 
-    @Autowired
-    private CouponService couponService;
-    @Autowired
-    private CouponRepository couponRepository;
-    @Autowired
-    private IssuedCouponRepository issuedCouponRepository;
+  @Autowired
+  private CouponService couponService;
+  @Autowired
+  private CouponLockService couponLockService;
+  @Autowired
+  private CouponRepository couponRepository;
+  @Autowired
+  private IssuedCouponRepository issuedCouponRepository;
 
-    @Test
-    @DisplayName("100명의 사용자가 동시에 쿠폰을 발급할 때, 쿠폰 수량이 정상적으로 감소하고 100개의 쿠폰이 발급된다.")
-    void issueCouponWith100Users() throws InterruptedException {
-        // given
-        final int threadCount = 100;
-        final Long couponId = couponRepository.save(CouponFixture.createCoupon()).getId();
-        final Long userId = 1L;
-        final int expectedCouponQuantity = 0;
+  @Test
+  @DisplayName("100명의 사용자가 동시에 쿠폰을 발급할 때, 쿠폰 수량이 정상적으로 감소하고 100개의 쿠폰이 발급된다.")
+  void issueCouponWith100Users() throws InterruptedException {
+    // given
+    final int threadCount = 100;
+    final Long couponId = couponRepository.save(CouponFixture.createCoupon()).getId();
+    final Long userId = 1L;
+    final int expectedCouponQuantity = 0;
 
-        Thread.sleep(1000);
-        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
-        CountDownLatch latch = new CountDownLatch(threadCount);
+    Thread.sleep(1000);
+    ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+    CountDownLatch latch = new CountDownLatch(threadCount);
 
-        // when
-        for (int i = 0; i < threadCount; i++) {
-            executor.submit(() -> {
-                try {
-                    couponService.issue(couponId, userId);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    latch.countDown();
-                }
-            });
+    // when
+    for (int i = 0; i < threadCount; i++) {
+      executor.submit(() -> {
+        try {
+          couponLockService.issueRLock(couponId, userId);
+        } catch (Exception e) {
+          e.printStackTrace();
+        } finally {
+          latch.countDown();
         }
-        latch.await();
-        executor.shutdown();
-
-        // then
-        final Coupon coupon = couponRepository.findById(couponId).orElseThrow();
-        assertEquals(expectedCouponQuantity, coupon.getQuantity());
+      });
     }
+    latch.await();
+    executor.shutdown();
+
+    // then
+    final Coupon coupon = couponRepository.findById(couponId).orElseThrow();
+    assertEquals(expectedCouponQuantity, coupon.getQuantity());
+  }
 
 
 }

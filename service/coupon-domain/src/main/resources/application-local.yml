@@ -1,0 +1,6 @@
+spring:
+  config:
+    import:
+      - classpath:properties/datasource.yml
+      - classpath:properties/jpa.yml
+      - classpath:properties/redis.yml

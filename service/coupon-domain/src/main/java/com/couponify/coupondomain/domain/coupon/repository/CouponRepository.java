@@ -12,8 +12,6 @@ public interface CouponRepository {
 
   Optional<Coupon> findById(Long couponId);
 
-  Optional<Coupon> findByIdForUpdate(Long couponId);
-
   List<Coupon> findExpiredCoupons(LocalDateTime now);
 
   void flush();
