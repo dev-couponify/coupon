@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class IssuedCouponRepositoryImpl implements IssuedCouponRepository {
 
-  private final JpaIssuedCouponRepository jpaIssuedCouponRepository;
+    private final JpaIssuedCouponRepository jpaIssuedCouponRepository;
 
-  @Override
-  public IssuedCoupon save(IssuedCoupon issuedCoupon) {
-    return jpaIssuedCouponRepository.save(issuedCoupon);
-  }
+    @Override
+    public IssuedCoupon save(IssuedCoupon issuedCoupon) {
+        return jpaIssuedCouponRepository.save(issuedCoupon);
+    }
 
 }

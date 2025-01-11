@@ -13,26 +13,26 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CouponLockService {
 
-  private final RedissonClient redissonClient;
-  private final CouponService couponService;
-  private final CouponRepository couponRepository;
+    private final RedissonClient redissonClient;
+    private final CouponService couponService;
+    private final CouponRepository couponRepository;
 
-  public Long issueRLock(Long couponId, Long userId) {
-    RLock lock = redissonClient.getLock("issue:coupon:" + couponId);
+    public Long issueRLock(Long couponId, Long userId) {
+        RLock lock = redissonClient.getLock("issue:coupon:" + couponId);
 
-    try {
-      if (lock.tryLock(10, 5, TimeUnit.SECONDS)) {
-        return couponService.issue(couponId, userId);
-      } else {
-        throw new CouponException(CouponErrorCode.LOCK_ACQUISITION_FAILED);
-      }
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    } finally {
-      if (lock.isHeldByCurrentThread()) {
-        lock.unlock();
-      }
+        try {
+            if (lock.tryLock(10, 5, TimeUnit.SECONDS)) {
+                return couponService.issue(couponId, userId);
+            } else {
+                throw new CouponException(CouponErrorCode.LOCK_ACQUISITION_FAILED);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
+        }
     }
-  }
 
 }

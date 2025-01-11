@@ -19,21 +19,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CouponController {
 
-  private final CouponService couponService;
-  private final CouponLockService couponLockService;
+    private final CouponService couponService;
+    private final CouponLockService couponLockService;
 
-  @PostMapping
-  public ResponseEntity<Void> create(@Valid @RequestBody CouponCreateRequest couponCreateRequest) {
-    Long savedCouponId = couponService.create(couponCreateRequest);
-    return ResponseEntity.created(URI.create("/coupon/" + savedCouponId)).build();
-  }
+    @PostMapping
+    public ResponseEntity<Void> create(
+        @Valid @RequestBody CouponCreateRequest couponCreateRequest) {
+        Long savedCouponId = couponService.create(couponCreateRequest);
+        return ResponseEntity.created(URI.create("/coupon/" + savedCouponId)).build();
+    }
 
-  @PostMapping("/issue/{couponId}")
-  public ResponseEntity<Void> issue(
-      @PathVariable(name = "couponId") Long couponId,
-      @RequestParam(name = "user-id") Long userId) {
-    Long savedIssuedCouponId = couponLockService.issueRLock(couponId, userId);
-    return ResponseEntity.created(URI.create("/issuedCoupon/" + savedIssuedCouponId)).build();
-  }
+    @PostMapping("/issue/{couponId}")
+    public ResponseEntity<Void> issue(
+        @PathVariable(name = "couponId") Long couponId,
+        @RequestParam(name = "user-id") Long userId) {
+        Long savedIssuedCouponId = couponLockService.issueRLock(couponId, userId);
+        return ResponseEntity.created(URI.create("/issuedCoupon/" + savedIssuedCouponId)).build();
+    }
 
 }

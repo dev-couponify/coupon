@@ -11,27 +11,27 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedisConfig {
 
-  @Value("${spring.data.redis.host}")
-  private String host;
+    @Value("${spring.data.redis.host}")
+    private String host;
 
-  @Value("${spring.data.redis.port}")
-  private int port;
+    @Value("${spring.data.redis.port}")
+    private int port;
 
-  @Value("${spring.data.redis.password}")
-  private String password;
+    @Value("${spring.data.redis.password}")
+    private String password;
 
-  @Bean
-  public RedissonClient redissonClient() {
-    Config config = new Config();
-    config.useSingleServer()
-        .setAddress("redis://" + host + ":" + port)
-        .setPassword(password);
-    return Redisson.create(config);
-  }
+    @Bean
+    public RedissonClient redissonClient() {
+        Config config = new Config();
+        config.useSingleServer()
+            .setAddress("redis://" + host + ":" + port)
+            .setPassword(password);
+        return Redisson.create(config);
+    }
 
-  @Bean
-  public RedissonConnectionFactory redissonConnectionFactory(RedissonClient redissonClient) {
-    return new RedissonConnectionFactory(redissonClient);
-  }
+    @Bean
+    public RedissonConnectionFactory redissonConnectionFactory(RedissonClient redissonClient) {
+        return new RedissonConnectionFactory(redissonClient);
+    }
 
 }

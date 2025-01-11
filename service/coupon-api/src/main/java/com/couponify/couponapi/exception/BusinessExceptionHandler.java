@@ -22,57 +22,57 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @RestControllerAdvice
 public class BusinessExceptionHandler {
 
-  @ExceptionHandler({
-      HttpRequestMethodNotSupportedException.class,
-      HttpMediaTypeNotSupportedException.class,
-      HttpMediaTypeNotAcceptableException.class,
-      MissingPathVariableException.class,
-      MissingServletRequestParameterException.class,
-      MissingServletRequestPartException.class,
-      ServletRequestBindingException.class,
-      TypeMismatchException.class,
-      HttpMessageNotReadableException.class,
-      MethodArgumentNotValidException.class,
-      NoHandlerFoundException.class
-  })
-  public ResponseEntity<ErrorResponse> badRequestException(
-      Exception exception,
-      HttpServletRequest request
-  ) {
-    ErrorResponse errorResponse = ErrorResponse.fromBadRequestException(request, exception);
+    @ExceptionHandler({
+        HttpRequestMethodNotSupportedException.class,
+        HttpMediaTypeNotSupportedException.class,
+        HttpMediaTypeNotAcceptableException.class,
+        MissingPathVariableException.class,
+        MissingServletRequestParameterException.class,
+        MissingServletRequestPartException.class,
+        ServletRequestBindingException.class,
+        TypeMismatchException.class,
+        HttpMessageNotReadableException.class,
+        MethodArgumentNotValidException.class,
+        NoHandlerFoundException.class
+    })
+    public ResponseEntity<ErrorResponse> badRequestException(
+        Exception exception,
+        HttpServletRequest request
+    ) {
+        ErrorResponse errorResponse = ErrorResponse.fromBadRequestException(request, exception);
 
-    log.error("Bad Request", exception);
+        log.error("Bad Request", exception);
 
-    return ResponseEntity.status(HttpStatus.valueOf(errorResponse.statusCode()))
-        .body(errorResponse);
-  }
+        return ResponseEntity.status(HttpStatus.valueOf(errorResponse.statusCode()))
+            .body(errorResponse);
+    }
 
 
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorResponse> internalServerErrorException(
-      Exception exception,
-      HttpServletRequest request
-  ) {
-    ErrorResponse errorResponse = ErrorResponse.fromInternalServerErrorException(request,
-        exception);
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> internalServerErrorException(
+        Exception exception,
+        HttpServletRequest request
+    ) {
+        ErrorResponse errorResponse = ErrorResponse.fromInternalServerErrorException(request,
+            exception);
 
-    log.error("Internal Server Error", exception);
+        log.error("Internal Server Error", exception);
 
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(errorResponse);
-  }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(errorResponse);
+    }
 
-  @ExceptionHandler(BusinessException.class)
-  public ResponseEntity<ErrorResponse> businessException(
-      BusinessException exception,
-      HttpServletRequest request
-  ) {
-    ErrorResponse errorResponse = ErrorResponse.fromBusinessException(request, exception);
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> businessException(
+        BusinessException exception,
+        HttpServletRequest request
+    ) {
+        ErrorResponse errorResponse = ErrorResponse.fromBusinessException(request, exception);
 
-    log.error(errorResponse.toString());
+        log.error(errorResponse.toString());
 
-    return ResponseEntity.status(exception.getStatus())
-        .body(errorResponse);
-  }
+        return ResponseEntity.status(exception.getStatus())
+            .body(errorResponse);
+    }
 
 }

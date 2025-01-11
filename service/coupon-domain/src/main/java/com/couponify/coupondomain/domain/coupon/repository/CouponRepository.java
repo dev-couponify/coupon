@@ -8,12 +8,12 @@ import java.util.Optional;
 
 public interface CouponRepository {
 
-  Coupon save(Coupon coupon);
+    Coupon save(Coupon coupon);
 
-  Optional<Coupon> findById(Long couponId);
+    Optional<Coupon> findById(Long couponId);
 
-  List<Coupon> findExpiredCoupons(LocalDateTime now);
+    List<Coupon> findExpiredCoupons(LocalDateTime now);
 
-  void flush();
+    void flush();
 
 }

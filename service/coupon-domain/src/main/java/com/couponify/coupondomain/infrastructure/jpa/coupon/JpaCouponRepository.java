@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JpaCouponRepository extends JpaRepository<Coupon, Long> {
 
-  List<Coupon> findAllByIssueEndAtBefore(LocalDateTime now);
+    List<Coupon> findAllByIssueEndAtBefore(LocalDateTime now);
 
 }

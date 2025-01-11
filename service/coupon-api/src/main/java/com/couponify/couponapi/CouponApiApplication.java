@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class CouponApiApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(CouponApiApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(CouponApiApplication.class, args);
+    }
 
 }

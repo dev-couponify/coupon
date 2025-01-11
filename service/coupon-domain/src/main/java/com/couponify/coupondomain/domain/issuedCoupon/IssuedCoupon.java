@@ -21,33 +21,33 @@ import lombok.NoArgsConstructor;
 @Table(name = "ISSUED_COUPON")
 public class IssuedCoupon {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "issued_coupon_id")
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "issued_coupon_id")
+    private Long id;
 
-  @Column(nullable = false)
-  private Long userId;
+    @Column(nullable = false)
+    private Long userId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(
-      name = "coupon_id",
-      nullable = false,
-      foreignKey = @ForeignKey(name = "FK_ISSUED_COUPON_COUPON_ID")
-  )
-  private Coupon coupon;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "coupon_id",
+        nullable = false,
+        foreignKey = @ForeignKey(name = "FK_ISSUED_COUPON_COUPON_ID")
+    )
+    private Coupon coupon;
 
-  @Column(nullable = false)
-  private Boolean isUsed;
+    @Column(nullable = false)
+    private Boolean isUsed;
 
-  private IssuedCoupon(Long userId, Coupon coupon) {
-    this.userId = userId;
-    this.coupon = coupon;
-    this.isUsed = false;
-  }
+    private IssuedCoupon(Long userId, Coupon coupon) {
+        this.userId = userId;
+        this.coupon = coupon;
+        this.isUsed = false;
+    }
 
-  public static IssuedCoupon of(Long userId, Coupon coupon) {
-    return new IssuedCoupon(userId, coupon);
-  }
+    public static IssuedCoupon of(Long userId, Coupon coupon) {
+        return new IssuedCoupon(userId, coupon);
+    }
 
 }
