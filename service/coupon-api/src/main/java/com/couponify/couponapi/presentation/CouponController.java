@@ -1,6 +1,6 @@
 package com.couponify.couponapi.presentation;
 
-import com.couponify.couponapi.application.CouponLockService;
+import com.couponify.couponapi.application.CouponIssueService;
 import com.couponify.couponapi.application.CouponService;
 import com.couponify.couponapi.presentation.request.CouponCreateRequest;
 import jakarta.validation.Valid;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CouponController {
 
     private final CouponService couponService;
-    private final CouponLockService couponLockService;
+    private final CouponIssueService couponIssueService;
 
     @PostMapping
     public ResponseEntity<Void> create(
@@ -33,7 +33,7 @@ public class CouponController {
     public ResponseEntity<Void> issue(
         @PathVariable(name = "couponId") Long couponId,
         @RequestParam(name = "user-id") Long userId) {
-        Long savedIssuedCouponId = couponLockService.issueRLock(couponId, userId);
+        Long savedIssuedCouponId = couponIssueService.issue(couponId, userId);
         return ResponseEntity.created(URI.create("/issuedCoupon/" + savedIssuedCouponId)).build();
     }
 

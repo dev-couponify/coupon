@@ -3,7 +3,6 @@ package com.couponify.couponapi.Integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.couponify.couponapi.CouponFixture;
-import com.couponify.couponapi.application.CouponLockService;
 import com.couponify.couponapi.application.CouponService;
 import com.couponify.coupondomain.domain.coupon.Coupon;
 import com.couponify.coupondomain.domain.coupon.repository.CouponRepository;
