@@ -129,7 +129,7 @@ public class Coupon {
 
     private void decreaseQuantity(int quantity) {
         this.quantity.decrease(quantity);
-        if (this.quantity.isZero()) {
+        if (this.quantity.checkIsZero()) {
             updateStatus(CouponStatus.SOLD_OUT);
         }
     }
