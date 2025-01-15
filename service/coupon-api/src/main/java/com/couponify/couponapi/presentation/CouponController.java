@@ -1,7 +1,7 @@
 package com.couponify.couponapi.presentation;
 
+import com.couponify.couponapi.application.CouponCreateService;
 import com.couponify.couponapi.application.CouponIssueService;
-import com.couponify.couponapi.application.CouponService;
 import com.couponify.couponapi.presentation.request.CouponCreateRequest;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CouponController {
 
-    private final CouponService couponService;
+    private final CouponCreateService couponCreateService;
     private final CouponIssueService couponIssueService;
 
     @PostMapping
     public ResponseEntity<Void> create(
         @Valid @RequestBody CouponCreateRequest couponCreateRequest) {
-        Long savedCouponId = couponService.create(couponCreateRequest);
+        Long savedCouponId = couponCreateService.create(couponCreateRequest);
         return ResponseEntity.created(URI.create("/coupon/" + savedCouponId)).build();
     }
 
