@@ -7,13 +7,15 @@ import com.couponify.couponapi.exception.CouponException;
 import com.couponify.coupondomain.domain.coupon.Coupon;
 import com.couponify.coupondomain.domain.coupon.CouponCache;
 import com.couponify.coupondomain.domain.coupon.repository.CouponRepository;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RMap;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RSet;
+import org.redisson.api.RTransaction;
 import org.redisson.api.RedissonClient;
+import org.redisson.api.TransactionOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,46 +29,62 @@ public class CouponIssueService {
     private final CouponRepository couponRepository;
     private final RedissonClient redissonClient;
 
+    @Value("${cache.coupon.expiration.hours}")
+    private Long couponExpirationHours;
+
     public void issue(Long couponId, Long userId) {
-        CouponCache couponCache = getCouponCache(couponId);
-        checkUserAlreadyIssued(couponId, userId);
+        RTransaction transaction = redissonClient.createTransaction(TransactionOptions.defaults());
+        try {
+            CouponCache couponCache = getCouponCache(transaction, couponId);
 
-        // TODO User 검증 필요
+            checkUserAlreadyIssued(transaction, couponId, userId);
+            couponCache.issue(QUANTITY_TO_ISSUE_COUPON);
+            addIssuer(transaction, couponId, userId);
+            updateCouponCache(transaction, couponId, couponCache);
 
-        couponCache.issue(QUANTITY_TO_ISSUE_COUPON);
-        addIssuer(couponId, userId);
-        updateCouponCache(couponId, couponCache);
+            transaction.commit();
+
+            setCouponCacheTTL(couponId, couponCache);
+        } catch (Exception e) {
+            transaction.rollback();
+            throw new CouponException(CouponErrorCode.TRANSACTION_COMMIT_FAILED, e.getMessage());
+        }
     }
 
-    private CouponCache getCouponCache(Long couponId) {
-        RMapCache<Long, CouponCache> couponInfo = redissonClient.getMapCache(
-            CouponPrefix.COUPON_INFO);
+    private CouponCache getCouponCache(RTransaction transaction, Long couponId) {
+        RMapCache<Long, CouponCache> couponInfo = transaction.getMapCache(CouponPrefix.COUPON_INFO);
         CouponCache couponCache = couponInfo.get(couponId);
 
         if (couponCache == null) {
             Coupon coupon = getCoupon(couponId);
-            couponCache = CouponCache.of(coupon);
-            couponInfo.put(couponId, couponCache, 1, TimeUnit.HOURS);
+            return CouponCache.of(coupon);
         }
 
         return couponCache;
     }
 
-    private void checkUserAlreadyIssued(Long couponId, Long userId) {
-        RSet<Long> issuedUsers = redissonClient.getSet(CouponPrefix.COUPON_ISSUER + couponId);
+    private void checkUserAlreadyIssued(RTransaction transaction, Long couponId, Long userId) {
+        RSet<Long> issuedUsers = transaction.getSet(CouponPrefix.COUPON_ISSUER + couponId);
         if (issuedUsers.contains(userId)) {
             throw new CouponException(CouponErrorCode.COUPON_ALREADY_ISSUED);
         }
     }
 
-    private void addIssuer(Long couponId, Long userId) {
-        RSet<Long> issuedUsers = redissonClient.getSet(CouponPrefix.COUPON_ISSUER + couponId);
+    private void addIssuer(RTransaction transaction, Long couponId, Long userId) {
+        RSet<Long> issuedUsers = transaction.getSet(CouponPrefix.COUPON_ISSUER + couponId);
         issuedUsers.add(userId);
     }
 
-    private void updateCouponCache(Long couponId, CouponCache couponCache) {
-        RMap<Long, CouponCache> couponInfo = redissonClient.getMap(CouponPrefix.COUPON_INFO);
+    private void updateCouponCache(RTransaction transaction, Long couponId,
+        CouponCache couponCache) {
+        RMapCache<Long, CouponCache> couponInfo = transaction.getMapCache(CouponPrefix.COUPON_INFO);
         couponInfo.put(couponId, couponCache);
+    }
+
+    private void setCouponCacheTTL(Long couponId, CouponCache couponCache) {
+        RMapCache<Long, CouponCache> couponInfo = redissonClient.getMapCache(
+            CouponPrefix.COUPON_INFO);
+        couponInfo.expire(Duration.ofHours(couponExpirationHours));
     }
 
     private Coupon getCoupon(Long couponId) {

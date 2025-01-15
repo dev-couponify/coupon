@@ -11,3 +11,8 @@ spring:
 schedule:
   cron: "0 0 0 * * *"
   use: true
+
+cache:
+  coupon:
+    expiration:
+      hours: 1
