@@ -1,6 +1,8 @@
 package com.couponify.coupondomain.domain.coupon;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,24 +18,37 @@ public class CouponCache {
     private Quantity quantity;
     private LocalDateTime issueStartAt;
     private LocalDateTime issueEndAt;
+    private Set<Long> issuerIds = new HashSet<>();
 
-    public static CouponCache of(Coupon coupon) {
+    public static CouponCache of(Coupon coupon, Set<Long> issuerIds) {
         return new CouponCache(
             coupon.getId(),
             coupon.getStatus(),
             new Quantity(coupon.getQuantity()),
             coupon.getIssueStartAt(),
-            coupon.getIssueEndAt()
+            coupon.getIssueEndAt(),
+            issuerIds
         );
     }
 
-    public void issue(int quantity) {
+    public void issue(Long userId, int quantity) {
+        validateDuplicateIssuer(userId);
         validateIssuable(quantity);
         decreaseQuantity(quantity);
     }
 
-    public int getQuantity() {
-        return quantity.getValue();
+    public void addIssuers(Set<Long> issuerIds) {
+        issuerIds.forEach(this::addIssuer);
+    }
+
+    private void addIssuer(Long userId) {
+        issuerIds.add(userId);
+    }
+
+    private void validateDuplicateIssuer(Long userId) {
+        if (issuerIds.contains(userId)) {
+            throw new IllegalArgumentException("이미 쿠폰을 발급한 사용자입니다.");
+        }
     }
 
     private void validateIssuable(int quantity) {

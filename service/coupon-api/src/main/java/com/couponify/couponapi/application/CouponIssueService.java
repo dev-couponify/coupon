@@ -1,17 +1,25 @@
 package com.couponify.couponapi.application;
 
 
-import com.couponify.couponapi.common.CouponPrefix;
+import static com.couponify.couponapi.common.CouponPrefix.COUPON_INFO;
+import static com.couponify.couponapi.common.CouponPrefix.COUPON_ISSUER;
+
 import com.couponify.couponapi.exception.CouponErrorCode;
 import com.couponify.couponapi.exception.CouponException;
 import com.couponify.coupondomain.domain.coupon.Coupon;
 import com.couponify.coupondomain.domain.coupon.CouponCache;
 import com.couponify.coupondomain.domain.coupon.repository.CouponRepository;
+import com.couponify.coupondomain.domain.issuedCoupon.IssuedCoupon;
+import com.couponify.coupondomain.domain.issuedCoupon.repository.IssuedCouponRepository;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RMap;
 import org.redisson.api.RMapCache;
-import org.redisson.api.RSet;
 import org.redisson.api.RTransaction;
 import org.redisson.api.RedissonClient;
 import org.redisson.api.TransactionOptions;
@@ -27,18 +35,19 @@ public class CouponIssueService {
 
     private static final int QUANTITY_TO_ISSUE_COUPON = 1;
     private final CouponRepository couponRepository;
+    private final IssuedCouponRepository issuedCouponRepository;
     private final RedissonClient redissonClient;
 
     @Value("${cache.coupon.expiration.hours}")
     private Long couponExpirationHours;
 
-    public void issue(Long couponId, Long userId) {
+    public void cacheCouponIssuance(Long couponId, Long userId) {
         RTransaction transaction = redissonClient.createTransaction(TransactionOptions.defaults());
         try {
             CouponCache couponCache = getCouponCache(transaction, couponId);
 
             checkUserAlreadyIssued(transaction, couponId, userId);
-            couponCache.issue(QUANTITY_TO_ISSUE_COUPON);
+            couponCache.issue(userId, QUANTITY_TO_ISSUE_COUPON);
             addIssuer(transaction, couponId, userId);
             updateCouponCache(transaction, couponId, couponCache);
 
@@ -51,40 +60,109 @@ public class CouponIssueService {
         }
     }
 
+    @Transactional
+    public void persistCouponIssuance() {
+        RTransaction transaction = redissonClient.createTransaction(TransactionOptions.defaults());
+        try {
+            RMap<Long, Set<Long>> couponIssuer = transaction.getMap(COUPON_ISSUER);
+            if (couponIssuer.isEmpty()) {
+                return;
+            }
+
+            processCouponIssuance(transaction, couponIssuer);
+            couponIssuer.delete();
+
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            throw new CouponException(CouponErrorCode.TRANSACTION_COMMIT_FAILED, e.getMessage());
+        }
+    }
+
     private CouponCache getCouponCache(RTransaction transaction, Long couponId) {
-        RMapCache<Long, CouponCache> couponInfo = transaction.getMapCache(CouponPrefix.COUPON_INFO);
+        RMapCache<Long, CouponCache> couponInfo = transaction.getMapCache(COUPON_INFO);
         CouponCache couponCache = couponInfo.get(couponId);
 
         if (couponCache == null) {
             Coupon coupon = getCoupon(couponId);
-            return CouponCache.of(coupon);
+            Set<Long> issuerIds = getIssuerIds(coupon);
+            return CouponCache.of(coupon, issuerIds);
         }
-
         return couponCache;
     }
 
+    private Set<Long> getIssuerIds(Coupon coupon) {
+        return new HashSet<>(issuedCouponRepository.findUserIdsByCoupon(coupon));
+    }
+
     private void checkUserAlreadyIssued(RTransaction transaction, Long couponId, Long userId) {
-        RSet<Long> issuedUsers = transaction.getSet(CouponPrefix.COUPON_ISSUER + couponId);
-        if (issuedUsers.contains(userId)) {
+        RMap<Long, Set<Long>> couponIssuer = transaction.getMap(COUPON_ISSUER);
+        Set<Long> issuers = couponIssuer.get(couponId);
+
+        if (issuers == null) {
+            issuers = new HashSet<>();
+            couponIssuer.put(couponId, issuers);
+            return;
+        }
+
+        if (issuers.contains(userId)) {
             throw new CouponException(CouponErrorCode.COUPON_ALREADY_ISSUED);
         }
     }
 
     private void addIssuer(RTransaction transaction, Long couponId, Long userId) {
-        RSet<Long> issuedUsers = transaction.getSet(CouponPrefix.COUPON_ISSUER + couponId);
-        issuedUsers.add(userId);
+        RMap<Long, Set<Long>> couponIssuer = transaction.getMap(COUPON_ISSUER);
+        Set<Long> issuers = couponIssuer.get(couponId);
+        issuers.add(userId);
+        couponIssuer.put(couponId, issuers);
     }
 
     private void updateCouponCache(RTransaction transaction, Long couponId,
         CouponCache couponCache) {
-        RMapCache<Long, CouponCache> couponInfo = transaction.getMapCache(CouponPrefix.COUPON_INFO);
+        RMapCache<Long, CouponCache> couponInfo = transaction.getMapCache(COUPON_INFO);
         couponInfo.put(couponId, couponCache);
     }
 
     private void setCouponCacheTTL(Long couponId, CouponCache couponCache) {
         RMapCache<Long, CouponCache> couponInfo = redissonClient.getMapCache(
-            CouponPrefix.COUPON_INFO);
+            COUPON_INFO);
         couponInfo.expire(Duration.ofHours(couponExpirationHours));
+    }
+
+    private void processCouponIssuance(
+        RTransaction transaction,
+        RMap<Long, Set<Long>> couponIssuer
+    ) {
+        List<IssuedCoupon> issuedCoupons = new ArrayList<>();
+        Set<Long> couponIds = couponIssuer.keySet();
+
+        // 쿠폰 ID별 IssuedCoupon 생성 및 저장
+        for (Long couponId : couponIds) {
+            Set<Long> issuers = couponIssuer.get(couponId);
+            Coupon coupon = getCoupon(couponId);
+            issuedCoupons.addAll(createIssuedCoupon(issuers, coupon));
+
+            coupon.decreaseQuantity(issuers.size());
+            log.info("{} 쿠폰의 수량을 {}개 차감합니다.", couponId, issuers.size());
+
+            updateCouponInfoWithIssuer(transaction, couponId, issuers);
+        }
+
+        issuedCouponRepository.saveAll(issuedCoupons);
+        log.info("{}개의 쿠폰 발급을 완료했습니다.", issuedCoupons.size());
+    }
+
+    private List<IssuedCoupon> createIssuedCoupon(Set<Long> issuers, Coupon coupon) {
+        return issuers.stream()
+            .map(issuer -> IssuedCoupon.of(issuer, coupon))
+            .toList();
+    }
+
+    private void updateCouponInfoWithIssuer(RTransaction transaction, Long couponId,
+        Set<Long> issuers) {
+        CouponCache couponCache = getCouponCache(transaction, couponId);
+        couponCache.addIssuers(issuers);
+        updateCouponCache(transaction, couponId, couponCache);
     }
 
     private Coupon getCoupon(Long couponId) {

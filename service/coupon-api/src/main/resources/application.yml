@@ -9,8 +9,10 @@ spring:
       - classpath:properties/jpa.yml
 
 schedule:
-  cron: "0 0 0 * * *"
   use: true
+  cron:
+    expire: "0 0 0 * * *"
+    issue: "*/10 * * * * *"
 
 cache:
   coupon:

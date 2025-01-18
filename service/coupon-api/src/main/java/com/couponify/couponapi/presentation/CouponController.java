@@ -34,7 +34,7 @@ public class CouponController {
     public ResponseEntity<Void> issue(
         @PathVariable(name = "couponId") Long couponId,
         @RequestParam(name = "user-id") Long userId) {
-        couponIssueService.issue(couponId, userId);
+        couponIssueService.cacheCouponIssuance(couponId, userId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

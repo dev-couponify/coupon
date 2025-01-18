@@ -12,14 +12,22 @@ import org.springframework.stereotype.Service;
 public class CouponSchedulerService {
 
     private final CouponExpireService couponExpireService;
-    
+    private final CouponIssueService couponIssueService;
+
     @Value("${schedule.use}")
     private boolean useSchedule;
 
-    @Scheduled(cron = "${schedule.cron}")
+    @Scheduled(cron = "${schedule.cron.expire}")
     public void expireCoupon() {
         if (useSchedule) {
             couponExpireService.expire();
+        }
+    }
+
+    @Scheduled(cron = "${schedule.cron.issue}")
+    public void issueCoupon() {
+        if (useSchedule) {
+            couponIssueService.persistCouponIssuance();
         }
     }
 

@@ -66,6 +66,13 @@ public class Coupon {
         decreaseQuantity(quantity);
     }
 
+    public void decreaseQuantity(int quantity) {
+        this.quantity.decrease(quantity);
+        if (this.quantity.checkIsZero()) {
+            updateStatus(CouponStatus.SOLD_OUT);
+        }
+    }
+
     public void expire() {
         updateStatus(CouponStatus.EXPIRED);
     }
@@ -127,11 +134,5 @@ public class Coupon {
             && this.issueEndAt.isAfter(LocalDateTime.now()));
     }
 
-    private void decreaseQuantity(int quantity) {
-        this.quantity.decrease(quantity);
-        if (this.quantity.checkIsZero()) {
-            updateStatus(CouponStatus.SOLD_OUT);
-        }
-    }
 
 }
