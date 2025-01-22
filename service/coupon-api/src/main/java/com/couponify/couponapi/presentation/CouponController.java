@@ -2,6 +2,7 @@ package com.couponify.couponapi.presentation;
 
 import com.couponify.couponapi.application.CouponCreateService;
 import com.couponify.couponapi.application.CouponIssueService;
+import com.couponify.couponapi.application.CouponLockService;
 import com.couponify.couponapi.presentation.request.CouponCreateRequest;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -22,6 +23,7 @@ public class CouponController {
 
     private final CouponCreateService couponCreateService;
     private final CouponIssueService couponIssueService;
+    private final CouponLockService couponLockService;
 
     @PostMapping
     public ResponseEntity<Void> create(
@@ -34,7 +36,7 @@ public class CouponController {
     public ResponseEntity<Void> issue(
         @PathVariable(name = "couponId") Long couponId,
         @RequestParam(name = "user-id") Long userId) {
-        couponIssueService.cacheCouponIssuance(couponId, userId);
+        couponLockService.cacheCouponIssuance(couponId, userId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

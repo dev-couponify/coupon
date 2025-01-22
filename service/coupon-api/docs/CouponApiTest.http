@@ -4,9 +4,11 @@ Content-Type: application/json
 
 {
   "name": "여름 할인 쿠폰",
-  "status": "ISSUABLE",
-  "quantity": 100
+  "status": "AVAILABLE",
+  "quantity": 1,
+  "issueStartAt": "2025-01-11T09:00:00",
+  "issueEndAt": "2025-01-11T15:15:59"
 }
 
 ### 쿠폰 발급
-POST http://localhost:8080/coupon/issue/1?user-id=1
+POST http://localhost:8080/coupon/issue/1?user-id=1372

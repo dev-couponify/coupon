@@ -68,15 +68,17 @@ public class CouponIssueService {
             if (couponIssuer.isEmpty()) {
                 return;
             }
-
             processCouponIssuance(transaction, couponIssuer);
-            couponIssuer.delete();
-
             transaction.commit();
         } catch (Exception e) {
             transaction.rollback();
             throw new CouponException(CouponErrorCode.TRANSACTION_COMMIT_FAILED, e.getMessage());
         }
+    }
+
+    public Set<Long> getIssuedCouponIds() {
+        RMap<Long, Set<Long>> couponIssuer = redissonClient.getMap(COUPON_ISSUER);
+        return couponIssuer.keySet();
     }
 
     private CouponCache getCouponCache(RTransaction transaction, Long couponId) {
@@ -102,10 +104,7 @@ public class CouponIssueService {
         if (issuers == null) {
             issuers = new HashSet<>();
             couponIssuer.put(couponId, issuers);
-            return;
-        }
-
-        if (issuers.contains(userId)) {
+        } else if (issuers.contains(userId)) {
             throw new CouponException(CouponErrorCode.COUPON_ALREADY_ISSUED);
         }
     }
@@ -134,20 +133,21 @@ public class CouponIssueService {
         RMap<Long, Set<Long>> couponIssuer
     ) {
         List<IssuedCoupon> issuedCoupons = new ArrayList<>();
-        Set<Long> couponIds = couponIssuer.keySet();
+        Set<Long> issuedCouponIds = couponIssuer.keySet();
 
         // 쿠폰 ID별 IssuedCoupon 생성 및 저장
-        for (Long couponId : couponIds) {
-            Set<Long> issuers = couponIssuer.get(couponId);
-            Coupon coupon = getCoupon(couponId);
+        for (Long issuedCouponId : issuedCouponIds) {
+            Set<Long> issuers = couponIssuer.get(issuedCouponId);
+            Coupon coupon = getCoupon(issuedCouponId);
             issuedCoupons.addAll(createIssuedCoupon(issuers, coupon));
 
             coupon.decreaseQuantity(issuers.size());
-            log.info("{} 쿠폰의 수량을 {}개 차감합니다.", couponId, issuers.size());
+            log.info("{} 쿠폰의 수량을 {}개 차감합니다.", issuedCouponId, issuers.size());
 
-            updateCouponInfoWithIssuer(transaction, couponId, issuers);
+            updateCouponInfoWithIssuer(transaction, issuedCouponId, issuers);
+            // 발급 쿠폰 캐시 삭제
+            couponIssuer.remove(issuedCouponId);
         }
-
         issuedCouponRepository.saveAll(issuedCoupons);
         log.info("{}개의 쿠폰 발급을 완료했습니다.", issuedCoupons.size());
     }
