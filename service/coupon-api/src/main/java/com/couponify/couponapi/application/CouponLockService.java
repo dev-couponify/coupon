@@ -1,38 +1,38 @@
 package com.couponify.couponapi.application;
 
-import com.couponify.couponapi.exception.CouponErrorCode;
-import com.couponify.couponapi.exception.CouponException;
+import static com.couponify.couponapi.common.CouponPrefix.LOCK_COUPON_PREFIX;
+
+import com.couponify.couponapi.common.RedissonLockManager;
 import com.couponify.coupondomain.domain.coupon.repository.CouponRepository;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j(topic = "CouponLockService")
 @Service
 @RequiredArgsConstructor
 public class CouponLockService {
 
-    private final RedissonClient redissonClient;
-    private final CouponService couponService;
+    private final CouponIssueService couponIssueService;
     private final CouponRepository couponRepository;
+    private final RedissonLockManager redissonLockManager;
 
-    public Long issueRLock(Long couponId, Long userId) {
-        RLock lock = redissonClient.getLock("issue:coupon:" + couponId);
+    public void cacheCouponIssuance(Long couponId, Long userId) {
+        redissonLockManager.executeLock(LOCK_COUPON_PREFIX + couponId, 10, 5,
+            () -> couponIssueService.cacheCouponIssuance(couponId, userId));
+    }
 
-        try {
-            if (lock.tryLock(10, 5, TimeUnit.SECONDS)) {
-                return couponService.issue(couponId, userId);
-            } else {
-                throw new CouponException(CouponErrorCode.LOCK_ACQUISITION_FAILED);
-            }
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (lock.isHeldByCurrentThread()) {
-                lock.unlock();
-            }
-        }
+    public void persistCouponIssuance() {
+        Set<Long> issuedCouponIds = couponIssueService.getIssuedCouponIds();
+        List<String> lockNames = generateIssuanceLockNames(issuedCouponIds.stream().toList());
+        redissonLockManager.executeMultipleLocks(lockNames, 10, 5, 3,
+            couponIssueService::persistCouponIssuance);
+    }
+
+    private List<String> generateIssuanceLockNames(List<Long> couponIds) {
+        return couponIds.stream().map(couponId -> LOCK_COUPON_PREFIX + couponId).toList();
     }
 
 }

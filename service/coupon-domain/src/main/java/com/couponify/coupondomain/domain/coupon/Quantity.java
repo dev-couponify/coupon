@@ -27,7 +27,7 @@ public class Quantity {
         this.value += amount;
     }
 
-    public boolean isZero() {
+    public boolean checkIsZero() {
         return this.value == 0;
     }
 
