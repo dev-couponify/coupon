@@ -16,6 +16,21 @@ public class RedissonLockManager {
 
     private final RedissonClient redissonClient;
 
+    public void executeLock(
+        String lockName, long waitSeconds, long leaseSeconds, Runnable logic) {
+        RLock lock = redissonClient.getLock(lockName);
+        try {
+            if (!lock.tryLock(waitSeconds, leaseSeconds, TimeUnit.SECONDS)) {
+                throw new CouponException(CouponErrorCode.LOCK_ACQUISITION_FAILED);
+            }
+            logic.run();
+        } catch (InterruptedException e) {
+            throw new CouponException(CouponErrorCode.LOCK_ACQUISITION_FAILED);
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public void executeMultipleLocks(
         List<String> lockNames, long waitSeconds, long leaseSeconds, int retryCount,
         Runnable logic) {
